@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Reducer from "./Reducer";
+import Header from "./components/SearchHeader";
+import ProductList from "./components/ProductList";
+import { ProductsContext } from "./Context";
+const App = () => {
+  const [data, setState] = useState({ furniture_styles: [], products: [] });
+  const { state, dispatch } = Reducer();
 
-function App() {
+  useEffect(() => {
+    async function fetchData() {
+      //get the products and furniture styles
+      const response = await fetch(
+        "http://www.mocky.io/v2/5c9105cb330000112b649af8"
+      );
+      const data = await response.json();
+      setState(data);
+    }
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ProductsContext.Provider value={{ state, dispatch }}>
+      <Header furnitureStyle={data.furniture_styles} />
+      <ProductList products={data.products} />
+    </ProductsContext.Provider>
   );
-}
+};
 
 export default App;
